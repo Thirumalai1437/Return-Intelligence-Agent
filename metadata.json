@@ -1,0 +1,5 @@
+{
+  "name": "Return Intelligence Agent",
+  "description": "AI agent system that analyzes product reviews and automatically identifies patterns behind customer complaints and return reasons.",
+  "requestFramePermissions": []
+}
