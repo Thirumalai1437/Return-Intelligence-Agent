@@ -46,8 +46,14 @@ export default async function handler(req: any, res: any) {
     
     // Fallback search for common image patterns if metadata fails
     if (!imageUrl) {
-      const imgMatch = html.match(/<img[^>]+src="([^"]+(?:jpg|jpeg|png))"[^>]*id="(?:landingImage|main-image|imgBlkFront|p-item-image)"/i);
-      if (imgMatch) imageUrl = imgMatch[1];
+      // Try to find image in Amazon's image gallery JSON
+      const galleryMatch = html.match(/"(?:hiRes|large)":"([^"]+)"/i);
+      if (galleryMatch) {
+        imageUrl = galleryMatch[1];
+      } else {
+        const imgMatch = html.match(/<img[^>]+src="([^"]+(?:jpg|jpeg|png))"[^>]*id="(?:landingImage|main-image|imgBlkFront|p-item-image)"/i);
+        if (imgMatch) imageUrl = imgMatch[1];
+      }
     }
                  
     return res.status(200).json({ title, textSnippet, imageUrl });

@@ -60,9 +60,18 @@ async function startServer() {
       
       // Fallback search for common image patterns if metadata fails
       if (!imageUrl) {
-        const imgMatch = html.match(/<img[^>]+src="([^"]+(?:jpg|jpeg|png))"[^>]*id="(?:landingImage|main-image|imgBlkFront|p-item-image)"/i);
-        if (imgMatch) imageUrl = imgMatch[1];
+        // Try to find image in Amazon's image gallery JSON
+        const galleryMatch = html.match(/"(?:hiRes|large)":"([^"]+)"/i);
+        if (galleryMatch) {
+          imageUrl = galleryMatch[1];
+        } else {
+          const imgMatch = html.match(/<img[^>]+src="([^"]+(?:jpg|jpeg|png))"[^>]*id="(?:landingImage|main-image|imgBlkFront|p-item-image)"/i);
+          if (imgMatch) imageUrl = imgMatch[1];
+        }
       }
+
+      console.log(`Extracted title: ${title}`);
+      console.log(`Extracted image: ${imageUrl ? 'Success' : 'Failed'}`);
                    
       res.json({ title, textSnippet, imageUrl });
     } catch (error: any) {
