@@ -15,7 +15,7 @@ export default async function handler(req: any, res: any) {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5"
       },
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(10000)
     });
     
     const html = await response.text();
@@ -33,8 +33,24 @@ export default async function handler(req: any, res: any) {
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .substring(0, 40000);
+
+    // Extract Image
+    let imageUrl = "";
+    const ogImageMatch = html.match(/<meta property="og:image" content="([^"]+)"/i);
+    const twitterImageMatch = html.match(/<meta name="twitter:image" content="([^"]+)"/i);
+    const schemaImageMatch = html.match(/itemprop="image" content="([^"]+)"/i);
+    
+    imageUrl = ogImageMatch ? ogImageMatch[1] : 
+               twitterImageMatch ? twitterImageMatch[1] : 
+               schemaImageMatch ? schemaImageMatch[1] : "";
+    
+    // Fallback search for common image patterns if metadata fails
+    if (!imageUrl) {
+      const imgMatch = html.match(/<img[^>]+src="([^"]+(?:jpg|jpeg|png))"[^>]*id="(?:landingImage|main-image|imgBlkFront|p-item-image)"/i);
+      if (imgMatch) imageUrl = imgMatch[1];
+    }
                  
-    return res.status(200).json({ title, textSnippet });
+    return res.status(200).json({ title, textSnippet, imageUrl });
   } catch (error: any) {
     console.error("Scrape error:", error.message);
     return res.status(500).json({ error: "Failed to scrape", details: error.message });

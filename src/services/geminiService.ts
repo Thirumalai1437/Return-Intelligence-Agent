@@ -16,6 +16,7 @@ export async function analyzeProduct(url: string) {
   // 1. Fetch the real title and text snippet from our backend proxy
   let realTitle = "";
   let textSnippet = "";
+  let productImage = "";
   try {
     const res = await fetch("/api/scrape-title", {
       method: "POST",
@@ -26,6 +27,7 @@ export async function analyzeProduct(url: string) {
       const data = await res.json();
       realTitle = data.title;
       textSnippet = data.textSnippet;
+      productImage = data.imageUrl;
     }
   } catch (e) {
     console.error("Failed to fetch title", e);
@@ -156,6 +158,7 @@ export async function analyzeProduct(url: string) {
   return {
     productName,
     productUrl: url,
+    productImage,
     totalReviews: estimatedTotalReviews,
     sentimentBreakdown: {
       positive: Math.round((sentimentPercentages.positivePercentage / 100) * estimatedTotalReviews),

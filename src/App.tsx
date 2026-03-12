@@ -105,9 +105,18 @@ export default function App() {
         {/* Dashboard */}
         {report && !loading && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="flex items-center justify-between bg-white/[0.02] backdrop-blur-lg border border-white/5 p-6 rounded-3xl">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight text-white mb-2">{report.productName}</h2>
+            <div className="flex flex-col md:flex-row items-start gap-6 bg-white/[0.02] backdrop-blur-lg border border-white/5 p-6 rounded-3xl">
+              {report.productImage && (
+                <div className="w-full md:w-48 h-48 rounded-2xl overflow-hidden bg-white/5 border border-white/10 flex-shrink-0">
+                  <img 
+                    src={report.productImage} 
+                    alt={report.productName}
+                    className="w-full h-full object-contain mix-blend-lighten p-2"
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-3xl font-bold tracking-tight text-white mb-2 truncate md:whitespace-normal">{report.productName}</h2>
                 <a 
                   href={report.productUrl} 
                   target="_blank" 
